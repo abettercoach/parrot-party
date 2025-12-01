@@ -1,9 +1,9 @@
 import { PLAYER_1, PLAYER_2 } from '@rcade/plugin-input-classic'
 
-type RCadePlayer = "P1" | "P2";
-type RCadeInput = "Up" | "Down" | "Left" | "Right" | "A" | "B";
+export type RCadePlayer = "P1" | "P2";
+export type RCadeInput = "Up" | "Down" | "Left" | "Right" | "A" | "B";
 
-type RCadeInputEvent = {
+export type RCadeInputEvent = {
     player: RCadePlayer,
     input: RCadeInput
 }
