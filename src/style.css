@@ -42,6 +42,12 @@ button:hover {
 } */
 
 /* Parrot Party */
+@font-face {
+  font-family: 'Doto';
+  src: url('../assets/Doto-VariableFont.ttf'); /* older syntax fallback */
+  font-weight: 100 900; /* Range from light to heavy */
+  font-display: swap;
+}
 
 body {
     background-color: black;

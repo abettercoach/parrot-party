@@ -489,7 +489,7 @@ export class ParrotPartyGame {
     // Sad Parrot GIF
     const party = document.createElement("img");
     party.style.width = "80px";
-    party.src = "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGQzNWF0dXZ2aDlvdjQxN3FjMGljczE2YnNqamN3bHdwdDhycTYyeiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/QBGe6zi0O1aaWxeR8i/giphy.gif";
+    party.src = "../assets/sad_parrot.gif";
 
     this.ui.main.replaceChildren(party);
 
