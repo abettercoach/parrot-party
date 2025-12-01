@@ -415,7 +415,7 @@ export class ParrotPartyGame {
     // Party Parrot GIF
     const party = document.createElement("img");
     party.style.width = "80px";
-    party.src = "https://media.tenor.com/3_mXIoBPNhoAAAAj/party-parrot.gif";
+    party.src = "/assets/party_parrot.gif";
 
     const lastMove = this.state.memory[this.state.memory.length - 1];
 
@@ -489,7 +489,7 @@ export class ParrotPartyGame {
     // Sad Parrot GIF
     const party = document.createElement("img");
     party.style.width = "80px";
-    party.src = "../assets/sad_parrot.gif";
+    party.src = "/assets/sad_parrot.gif";
 
     this.ui.main.replaceChildren(party);
 
