@@ -2,6 +2,9 @@
 
 import { RCadeInputAdapter, type RCadePlayer, type RCadeInput, type RCadeInputEvent } from "./RCadeInputAdapter";
 import * as Util from "./util";
+import partyParrotURL from '../assets/party_parrot.gif';
+import sadParrotURL from '../assets/sad_parrot.gif';
+
 
 type GameUI = {header: HTMLElement , main: HTMLElement , footer: HTMLElement };
 type GameState = {
@@ -415,7 +418,7 @@ export class ParrotPartyGame {
     // Party Parrot GIF
     const party = document.createElement("img");
     party.style.width = "80px";
-    party.src = "/assets/party_parrot.gif";
+    party.src = partyParrotURL;
 
     const lastMove = this.state.memory[this.state.memory.length - 1];
 
@@ -489,7 +492,7 @@ export class ParrotPartyGame {
     // Sad Parrot GIF
     const party = document.createElement("img");
     party.style.width = "80px";
-    party.src = "/assets/sad_parrot.gif";
+    party.src = sadParrotURL;
 
     this.ui.main.replaceChildren(party);
 
