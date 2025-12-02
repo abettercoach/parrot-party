@@ -43,6 +43,13 @@ button:hover {
 
 /* Parrot Party */
 @font-face {
+  font-family: 'Handjet';
+  src: url('../assets/Handjet-Variable.ttf'); /* older syntax fallback */
+  font-weight: 100 900; /* Range from light to heavy */
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Doto';
   src: url('../assets/Doto-VariableFont.ttf'); /* older syntax fallback */
   font-weight: 100 900; /* Range from light to heavy */
@@ -108,7 +115,7 @@ main #subtitle {
 
 .actionBox {
     font-size: xx-large;
-    font-family: "Doto";
+    font-family: "Handjet";
 }
 
 .move-drop {
@@ -137,7 +144,7 @@ footer.title-screen {
     width: 40px;
     height: 40px;
     font-size: 2em;
-    font-family: "Doto";
+    font-family: "Handjet";
     display: flex;
     justify-content: center;
     align-items: center;
