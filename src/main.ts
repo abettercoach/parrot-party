@@ -13,7 +13,6 @@ import { ParrotPartyGame } from './game'
 // const status = document.querySelector<HTMLParagraphElement>('#status')!
 // const controls = document.querySelector<HTMLDivElement>('#controls')!
 
-let gameStarted = false
 let inputAdapter = new RCadeInputAdapter();
 let game = new ParrotPartyGame(inputAdapter);
 
@@ -23,9 +22,8 @@ function setup() {
 }
 
 function update() {
-    if (!gameStarted) {
-        if (SYSTEM.ONE_PLAYER) {
-            gameStarted = true
+    if (game.state.scene === "title-screen") {
+        if (SYSTEM.TWO_PLAYER) {
             // status.textContent = 'Game Started!'
             game.promptMove();
         }

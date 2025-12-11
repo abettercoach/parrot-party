@@ -1,12 +1,36 @@
 //   const BINDINGS = KeyboardBindings;
 
+import { SYSTEM } from '@rcade/plugin-input-classic'
 import { RCadeInputAdapter, type RCadePlayer, type RCadeInput, type RCadeInputEvent } from "./RCadeInputAdapter";
 import * as Util from "./util";
+
 import partyParrotURL from '../assets/party_parrot.gif';
 import sadParrotURL from '../assets/sad_parrot.gif';
 
+import bgtrack from '../assets/audio/bgtrack.wav';
+import upsound from '../assets/audio/up.wav';
+import downsound from '../assets/audio/down.wav';
+import rightsound from '../assets/audio/right.wav';
+import leftsound from '../assets/audio/left.wav';
+import asound from '../assets/audio/a.wav';
+import bsound from '../assets/audio/b.wav';
 
-type GameUI = {header: HTMLElement , main: HTMLElement , footer: HTMLElement };
+
+type GameUI = {
+  header: HTMLElement, 
+  main: HTMLElement, 
+  footer: HTMLElement, 
+  moveBoxes: HTMLElement[],
+  audio: {
+    backTrack: HTMLAudioElement,
+    up: HTMLAudioElement,
+    down: HTMLAudioElement,
+    right: HTMLAudioElement,
+    left: HTMLAudioElement,
+    a: HTMLAudioElement,
+    b: HTMLAudioElement,
+  }
+};
 type GameState = {
   scene: string,
   curr_player: RCadePlayer,
@@ -16,7 +40,7 @@ type GameState = {
 
 export class ParrotPartyGame {
   private ui: GameUI;
-  private state: GameState;
+  public state: GameState;
 
   private mainTimeout: number | undefined;
 
@@ -33,7 +57,17 @@ export class ParrotPartyGame {
     this.ui = {
       header: h,
       main: m,
-      footer: f
+      footer: f,
+      moveBoxes: [],
+      audio: {
+        backTrack: new Audio(bgtrack),
+        up: new Audio(upsound),
+        down: new Audio(downsound),
+        right: new Audio(rightsound),
+        left: new Audio(leftsound),
+        a: new Audio(asound),
+        b: new Audio(bsound),
+      }
     };
 
     this.state = {
@@ -43,8 +77,19 @@ export class ParrotPartyGame {
       memory: [],
     }
 
-    input.onInput((e) => {
+    this.ui.audio.backTrack.load();
+    this.ui.audio.backTrack.loop = true;
+    this.ui.audio.backTrack.volume = 0.15;
 
+    this.ui.audio.up.load();
+    this.ui.audio.down.load();
+    this.ui.audio.right.load();
+    this.ui.audio.left.load();
+    this.ui.audio.a.load();
+    this.ui.audio.b.load();
+    this.ui.audio.b.volume = 0.4;
+
+    input.onInput((e) => {
       // If game idle for 1 min, return to title screen
       if (this.mainTimeout) {
         clearTimeout(this.mainTimeout);
@@ -53,12 +98,9 @@ export class ParrotPartyGame {
         this.resetGame();
       }, 30000);
 
-    //   const key = event.code;
-    //   const binding = BINDINGS[key];
-    //   if (!binding) return;
-
-    //   const player = e.player;
-    //   const action = e.input;
+      if (this.state.scene === "title-screen" && SYSTEM.TWO_PLAYER) {
+        this.promptMove();
+      }
 
       this.handleAction(e.player, e.input);
     });
@@ -67,6 +109,32 @@ export class ParrotPartyGame {
   }
 
   handleAction(player: RCadePlayer, action: RCadeInput) {
+
+    if (player === this.state.curr_player) {
+      switch (action) {
+        case "Up":
+          this.ui.audio.up.play();
+          break;
+        case "Down":
+          this.ui.audio.down.play();
+          break;
+        case "Right":
+          this.ui.audio.right.play();
+          break;
+        case "Left":
+          this.ui.audio.left.play();
+          break;
+        case "A":
+          this.ui.audio.a.play();
+          break;
+        case "B":
+          this.ui.audio.b.play();
+          break;
+        default:
+          break;
+      }
+    }
+
     switch (this.state.scene) {
       case "title-screen":
         this.promptMove();
@@ -89,6 +157,20 @@ export class ParrotPartyGame {
     this.state.memory = [];
     this.state.curr_index = 0;
 
+    //Audio
+    this.ui.audio.backTrack.playbackRate = 1;
+    this.ui.audio.up.playbackRate = 1;
+    this.ui.audio.down.playbackRate = 1;
+    this.ui.audio.left.playbackRate = 1;
+    this.ui.audio.right.playbackRate = 1;
+    this.ui.audio.a.playbackRate = 1;
+    this.ui.audio.b.playbackRate = 1;
+
+    this.ui.moveBoxes = [];
+    this.ui.footer.replaceChildren();
+
+    this.ui.audio.backTrack.play();
+
     this.uiTitleScreen();
   }
 
@@ -99,6 +181,7 @@ export class ParrotPartyGame {
   }
 
   addMove(player: RCadePlayer, input: RCadeInput) {
+
     const is_curr_player = player === this.state.curr_player;
     if (!is_curr_player) return;
 
@@ -122,13 +205,16 @@ export class ParrotPartyGame {
 
     this.uiScramble();
   }
+
   echoMoves() {
+
     this.state.scene = "echo-moves";
 
     this.uiEchoMoves();
   }
 
   echoMove(player: RCadePlayer, input: RCadeInput) {
+
     this.state.scene = "echo-moves";
 
     const is_curr_player = player === this.state.curr_player;
@@ -150,19 +236,38 @@ export class ParrotPartyGame {
 
     this.state.curr_index++;
 
-    setTimeout(() => {
-      if (this.state.curr_index >= this.state.memory.length) {
-        this.promptMove();
-      } else {
-        this.echoMoves(); 
-      }
-    }, 250);
+    if (this.state.curr_index >= this.state.memory.length) {
+      this.promptMove();
+    } else {
+      this.echoMoves(); 
+    }
+  }
+
+  sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   badMove() {
     this.state.scene = "bad-move";
 
     this.uiBadMove();
+
+    const playbackRate = (rate: number) => {
+        this.ui.audio.backTrack.playbackRate = rate;
+        this.ui.audio.up.playbackRate = rate;
+        this.ui.audio.down.playbackRate = rate;
+        this.ui.audio.left.playbackRate = rate;
+        this.ui.audio.right.playbackRate = rate;
+        this.ui.audio.a.playbackRate = rate;
+        this.ui.audio.b.playbackRate = rate;
+    };
+
+    setTimeout(async () => {
+      for (let rate = 1.0; rate > 0.40; rate -= 0.1) {
+        playbackRate(rate);
+        await this.sleep(10);
+      }
+    }, 0);
     
     setTimeout(() => {
       this.gameOver();
@@ -170,6 +275,7 @@ export class ParrotPartyGame {
   }
 
   gameOver() {
+
     this.state.scene = "lose";
 
     this.uiGameOver();
@@ -191,7 +297,7 @@ export class ParrotPartyGame {
 
     const subtitle = document.createElement('p');
     subtitle.id = "subtitle";
-    subtitle.innerHTML = "press P1 to start";
+    subtitle.innerHTML = "press P2 to start";
     subtitle.classList.add("neon-glow");
 
     let curr_color_i = 0;
@@ -274,22 +380,48 @@ export class ParrotPartyGame {
   }
 
   renderFooter() {
-    
-    this.ui.footer.innerHTML = JSON.stringify(this.state.memory);
+    //TODO: rethink logic so we're not clearing divs at every scene change,
+    // and we can keep async animations alive even with new user input
+    // particularly relevant for "good move" scene, but probably important
+    // for any type of animation to be separate from the input handling logic
 
-    let boxes = [];
+    let boxes = this.ui.moveBoxes;
+    
     let i = 0;
     for (const move of this.state.memory) {
-      const moveBox = document.createElement("div");
-      moveBox.classList.add("moveBox");
+      const moveBox = boxes[i];
+
+      const animations = moveBox.getAnimations();
+      for (let a of animations) {
+        a.cancel();
+      }
+
+      const curr_style = getComputedStyle(moveBox);
 
       const passed = i < this.state.curr_index;
-      moveBox.style.backgroundColor = !passed ? "black" : Util.colors[move.player];
-      moveBox.style.borderColor = !passed ? Util.colors[move.player] : "";
-      moveBox.style.color = !passed ? Util.colors[move.player] : "black";
-      moveBox.innerHTML = passed ? Util.ActionToDisplay[move.input] : '?';
 
-      boxes.push(moveBox);
+      const frames = [
+        { backgroundColor: curr_style.backgroundColor, 
+          transform: curr_style.transform, 
+          borderColor: curr_style.borderColor, 
+          color: curr_style.color
+        }, 
+        {
+          backgroundColor: !passed ? "black" : Util.colors[move.player], 
+          transform: "scale(1.0)", 
+          borderColor: !passed ? Util.colors[move.player] : "", 
+          color: !passed ? Util.colors[move.player] : "black"
+        }
+      ];
+
+      moveBox.animate(frames,{
+        duration: 200, 
+        iterations: 1, 
+        fill: 'forwards', 
+        easing: 'ease' 
+      });
+
+      moveBox.innerHTML = passed ? Util.ActionToDisplay[move.input] : '?';
 
       i++;
     }
@@ -297,35 +429,29 @@ export class ParrotPartyGame {
     if (this.state.scene === "good-move") {
       const wonBox = boxes[this.state.curr_index];
 
-      // Blink Header
-      let curr_color_i = 0;
       let colors = Util.RainbowColorsCSS.slice(1);
-      const blinkInterval = setInterval(() => {
-        const color = colors[curr_color_i + 1];
 
-        wonBox.style.backgroundColor = color;
-
-        curr_color_i++;
-        if (curr_color_i >= colors.length) {
-          curr_color_i = 0;
-        }
-      }, 0);
-
+      const color = Util.colors[this.state.memory[this.state.curr_index].player];
       setTimeout(() => {
-        clearInterval(blinkInterval);
 
         const frames = [
           {backgroundColor: "black", transform: "scale(0.8)"}, 
-          {backgroundColor: Util.colors[this.state.curr_player], transform: "scale(1.0)"}
+          {backgroundColor: colors[0], transform: "scale(0.7)"}, 
+          {backgroundColor: colors[1], transform: "scale(0.7)"}, 
+          {backgroundColor: colors[2], transform: "scale(1.2)"}, 
+          {backgroundColor: colors[3], transform: "scale(0.9)"}, 
+          {backgroundColor: colors[4], transform: "scale(0.6)"}, 
+          {backgroundColor: colors[5], transform: "scale(1.1)"}, 
+          {backgroundColor: color, transform: "scale(1.0)"}
         ];
 
         wonBox.animate(frames,{
-          duration: 250, 
-          iterations: 1, // Loop indefinitely
-          fill: 'forwards', // Animate back and forth
-          easing: 'ease' // Smooth transition
+          duration: 500, 
+          iterations: 1, 
+          fill: 'forwards', 
+          easing: 'ease' 
         });
-      }, 100);
+      }, 0);
     }
 
     if (this.state.scene === "bad-move") {
@@ -370,20 +496,31 @@ export class ParrotPartyGame {
         direction: 'alternate', // Animate back and forth
         easing: 'ease-in-out' // Smooth transition
       });
+
       boxes.push(blankBox);
     }
 
     if (this.state.scene === "add-move") {
+      let colors = Util.RainbowColorsCSS.slice(1);
       const added = this.state.memory[this.state.memory.length - 1];
       let filledBox = document.createElement("div");
       filledBox.classList.add("moveBox");
       filledBox.classList.add("fill");
       filledBox.innerHTML = Util.ActionToDisplay[added.input];
-      filledBox.animate([{backgroundColor: "black", transform: "scale(0.8)"}, {backgroundColor: Util.colors[added.player], transform: "scale(1.0)"}],{
-        duration: 500, 
-        iterations: 1, // Loop indefinitely
-        fill: 'forwards', // Animate back and forth
-        easing: 'ease' // Smooth transition
+      filledBox.animate([
+          {backgroundColor: "black", transform: "rotate(10deg) scale(0.8)"}, 
+          {backgroundColor: colors[0], transform: "rotate(-5deg) scale(0.7)"}, 
+          {backgroundColor: colors[1], transform: "rotate(25deg) scale(0.7)"}, 
+          {backgroundColor: colors[2], transform: "rotate(20deg) scale(1.2)"}, 
+          {backgroundColor: colors[3], transform: "rotate(-15deg) scale(0.9)"}, 
+          {backgroundColor: colors[4], transform: "rotate(0deg) scale(0.6)"}, 
+          {backgroundColor: colors[5], transform: "rotate(-25deg) scale(1.1)"}, 
+          {backgroundColor: Util.colors[added.player], transform: "rotate(0deg) scale(1.0)"}
+      ],{
+        duration: 600, 
+        iterations: 1, 
+        fill: 'forwards', 
+        easing: 'ease' 
       });
       
       boxes.pop();
@@ -443,7 +580,6 @@ export class ParrotPartyGame {
       moveDrop.style.top = `${randomTop}px`;
 
       let keyframes = [];
-      console.log(lastMove.input);
       switch (lastMove.input) {
         case "Up":
           keyframes = Util.DROP_KEYFRAMES_UP;

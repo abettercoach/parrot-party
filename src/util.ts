@@ -54,20 +54,20 @@ export const RainbowColorsCSS = [
 
   export   const DROP_KEYFRAMES_UP = [
         {transform: 'translate(-50%, calc(100vh + 50px))'},
-        {transform: 'translate(-50%, cal(0vh - 500px)'}
+        {transform: 'translate(-50%, calc(0vh - 500px))'}
     ];
 
   export   const DROP_KEYFRAMES_DOWN = [
-        {transform: 'translate(-50%, cal(0vh - 500px)'}, 
+        {transform: 'translate(-50%, calc(0vh - 500px))'}, 
         {transform: 'translate(-50%, calc(100vh + 50px))'}
     ];
 
    export  const DROP_KEYFRAMES_RIGHT = [
-        {transform: 'translate(cal(0vw - 500px), 0'}, 
-        {transform: 'translate(calc(100vw + 50px), 0)'}
+        {transform: 'translate(calc(0vw - 500px)), 0'}, 
+        {transform: 'translate(calc(100vw + 50px)), 0)'}
     ];
 
   export  const DROP_KEYFRAMES_LEFT = [
-        {transform: 'translate(calc(100vw + 50px), 0)'},
-        {transform: 'translate(cal(0vw - 500px), 0'}
+        {transform: 'translate(calc(100vw + 50px)), 0)'},
+        {transform: 'translate(calc(0vw - 500px)), 0'}
     ];
