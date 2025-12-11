@@ -164,6 +164,8 @@ export class ParrotPartyGame {
     this.state.curr_index = 0;
 
     //Audio
+    this.ui.audio.backTrack.currentTime = 0;
+
     this.ui.audio.backTrack.playbackRate = 1;
     this.ui.audio.up.playbackRate = 1;
     this.ui.audio.down.playbackRate = 1;
