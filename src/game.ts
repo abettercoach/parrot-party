@@ -113,21 +113,27 @@ export class ParrotPartyGame {
     if (player === this.state.curr_player) {
       switch (action) {
         case "Up":
+          this.ui.audio.up.currentTime = 0;
           this.ui.audio.up.play();
           break;
         case "Down":
+          this.ui.audio.down.currentTime = 0;
           this.ui.audio.down.play();
           break;
         case "Right":
+          this.ui.audio.right.currentTime = 0;
           this.ui.audio.right.play();
           break;
         case "Left":
+          this.ui.audio.left.currentTime = 0;
           this.ui.audio.left.play();
           break;
         case "A":
+          this.ui.audio.a.currentTime = 0;
           this.ui.audio.a.play();
           break;
         case "B":
+          this.ui.audio.b.currentTime = 0;
           this.ui.audio.b.play();
           break;
         default:
