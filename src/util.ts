@@ -63,11 +63,11 @@ export const RainbowColorsCSS = [
     ];
 
    export  const DROP_KEYFRAMES_RIGHT = [
-        {transform: 'translate(calc(0vw - 500px)), 0'}, 
-        {transform: 'translate(calc(100vw + 50px)), 0)'}
+        {transform: 'translate(calc(0vw - 500px), 0)'}, 
+        {transform: 'translate(calc(100vw + 50px), 0)'}
     ];
 
   export  const DROP_KEYFRAMES_LEFT = [
-        {transform: 'translate(calc(100vw + 50px)), 0)'},
-        {transform: 'translate(calc(0vw - 500px)), 0'}
+        {transform: 'translate(calc(100vw + 50px), 0)'},
+        {transform: 'translate(calc(0vw - 500px), 0)'}
     ];
